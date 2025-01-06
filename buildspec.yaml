@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - pip install --upgrade pip
+  build:
+    commands:
+      - cd lambdas/ValidatorLambda
+      - zip -r ../ValidatorLambda.zip .  # Create a zip file of the ValidatorLambda code
+      - aws cloudformation package \
+          --template-file lamda_cf_template.yaml \
+          --s3-bucket pipeline-cicd-serverless \
+          --output-template-file packaged-template.yaml
+artifacts:
+  files:
+    - packaged-template.yaml        # Include the CloudFormation packaged template
+    - lambdas/ValidatorLambda.zip   # Include the Lambda deployment package

@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  ValidatorLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.13
+      Role: arn:aws:iam::592789829210:role/service-role/ValidatorLambda-role-vecq9y9u
+      Code:
+        S3Bucket: !Sub "${CodeBucket}"
+        S3Key: !Sub "${CodeKey}"
+      Timeout: 30
+      MemorySize: 128
+      Description: "Lambda function deployed via CodePipeline"
+
+Parameters:
+  CodeBucket:
+    Type: String
+    Description: "The S3 bucket containing the Lambda deployment package"
+  CodeKey:
+    Type: String
+    Description: "The S3 key for the Lambda deployment package"
