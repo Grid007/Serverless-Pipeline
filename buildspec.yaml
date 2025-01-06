@@ -18,3 +18,4 @@ artifacts:
   files:
     - packaged-template.yaml        # Include the CloudFormation packaged template
     - lambdas/ValidatorLambda.zip   # Include the Lambda deployment package
+    - lambda_cf_template.yaml       # Ensure the CloudFormation template is included in artifacts
