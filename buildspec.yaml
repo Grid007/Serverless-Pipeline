@@ -8,9 +8,9 @@ phases:
     commands:
       - cd lambdas/ValidatorLambda
       - zip -r ../ValidatorLambda.zip .  # Create a zip file of the ValidatorLambda code
-      - cd ../..
-      - ls -alh  # List files to check if lambda_cf_template.yaml is available
-      - aws cloudformation package \
+      - cd ../..  # Navigate back to the project root directory
+      - |
+        aws cloudformation package \
           --template-file lambda_cf_template.yaml \
           --s3-bucket pipeline-cicd-serverless \
           --output-template-file packaged-template.yaml
