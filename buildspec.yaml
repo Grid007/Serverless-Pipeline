@@ -8,10 +8,11 @@ phases:
     commands:
       - cd lambdas/ValidatorLambda
       - zip -r ../ValidatorLambda.zip .  # Create a zip file of the ValidatorLambda code
+      - cd ../..  # Navigate back to the project root directory
       - aws cloudformation package \
-          --template-file lamda_cf_template.yaml \
-          --s3-bucket pipeline-cicd-serverless \
-          --output-template-file packaged-template.yaml
+          --template-file lamda_cf_template.yaml \  # Use the correct template file name
+          --s3-bucket pipeline-cicd-serverless \  # Specify the correct S3 bucket
+          --output-template-file packaged-template.yaml  # Specify the output packaged template
 artifacts:
   files:
     - packaged-template.yaml        # Include the CloudFormation packaged template
