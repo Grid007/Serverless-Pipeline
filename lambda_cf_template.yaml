@@ -1,22 +1,75 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Resources:
-  ValidatorLambdaFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Handler: app.lambda_handler
-      Runtime: python3.13
-      Role: arn:aws:iam::592789829210:role/service-role/ValidatorLambda-role-vecq9y9u
-      Code:
-        S3Bucket: !Sub "${CodeBucket}"
-        S3Key: !Sub "${CodeKey}"
-      Timeout: 30
-      MemorySize: 128
-      Description: "Lambda function deployed via CodePipeline"
+Description: CloudFormation template for deploying multiple Lambda functions via CodePipeline.
 
 Parameters:
   CodeBucket:
     Type: String
-    Description: "The S3 bucket containing the Lambda deployment package"
-  CodeKey:
+    Description: "The S3 bucket containing the Lambda deployment packages"
+  ValidatorCodeKey:
     Type: String
-    Description: "The S3 key for the Lambda deployment package"
+    Description: "The S3 key for the ValidatorLambda deployment package"
+  DataLoaderCodeKey:
+    Type: String
+    Description: "The S3 key for the DataLoaderLambda deployment package"
+  UniversitiesCodeKey:
+    Type: String
+    Description: "The S3 key for the LoadUniversitiesLambda deployment package"
+
+Resources:
+  # Validator Lambda Function
+  ValidatorLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: ValidatorLambda
+      Handler: app.lambda_handler
+      Runtime: python3.13
+      Role: arn:aws:iam::123456789012:role/service-role/ValidatorLambda-role
+      Code:
+        S3Bucket: !Ref CodeBucket
+        S3Key: !Ref ValidatorCodeKey
+      Timeout: 30
+      MemorySize: 128
+      Description: "Validator Lambda function deployed via CodePipeline"
+
+  # DataLoader Lambda Function
+  DataLoaderLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: DataLoaderLambda
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.13
+      Role: arn:aws:iam::123456789012:role/service-role/DataLoaderLambda-role
+      Code:
+        S3Bucket: !Ref CodeBucket
+        S3Key: !Ref DataLoaderCodeKey
+      Timeout: 30
+      MemorySize: 128
+      Description: "DataLoader Lambda function deployed via CodePipeline"
+
+  # LoadUniversities Lambda Function
+  LoadUniversitiesLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: LoadUniversitiesLambda
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.13
+      Role: arn:aws:iam::123456789012:role/service-role/LoadUniversitiesLambda-role
+      Code:
+        S3Bucket: !Ref CodeBucket
+        S3Key: !Ref UniversitiesCodeKey
+      Timeout: 30
+      MemorySize: 128
+      Description: "Load Universities Lambda function deployed via CodePipeline"
+
+Outputs:
+  ValidatorLambdaFunctionName:
+    Description: "Name of the Validator Lambda Function"
+    Value: !GetAtt ValidatorLambdaFunction.FunctionName
+
+  DataLoaderLambdaFunctionName:
+    Description: "Name of the DataLoader Lambda Function"
+    Value: !GetAtt DataLoaderLambdaFunction.FunctionName
+
+  LoadUniversitiesLambdaFunctionName:
+    Description: "Name of the Load Universities Lambda Function"
+    Value: !GetAtt LoadUniversitiesLambdaFunction.FunctionName

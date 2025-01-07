@@ -6,13 +6,38 @@ phases:
       - pip install --upgrade pip
   build:
     commands:
+      # Package ValidatorLambda
       - cd lambdas/ValidatorLambda
-      - zip -r ../ValidatorLambda.zip .  # Create a zip file of the ValidatorLambda code
+      - zip -r ../../ValidatorLambda.zip .
+      - cd ../..
       - aws cloudformation package \
-          --template-file lamda_cf_template.yaml \
+          --template-file lambda_cf_template.yaml \
           --s3-bucket pipeline-cicd-serverless \
-          --output-template-file packaged-template.yaml
+          --output-template-file ValidatorPackagedTemplate.yaml
+
+      # Package DataLoaderLambda
+      - cd lambdas/DataLoaderLambda
+      - zip -r ../../DataLoaderLambda.zip .
+      - cd ../..
+      - aws cloudformation package \
+          --template-file lambda_cf_template.yaml \
+          --s3-bucket pipeline-cicd-serverless \
+          --output-template-file DataLoaderPackagedTemplate.yaml
+
+      # Package LoadUniversitiesLambda
+      - cd lambdas/Universities
+      - zip -r ../../LoadUniversitiesLambda.zip .
+      - cd ../..
+      - aws cloudformation package \
+          --template-file lambda_cf_template.yaml \
+          --s3-bucket pipeline-cicd-serverless \
+          --output-template-file UniversitiesPackagedTemplate.yaml
+
 artifacts:
   files:
-    - packaged-template.yaml        # Include the CloudFormation packaged template
-    - lambdas/ValidatorLambda.zip   # Include the Lambda deployment package
+    - ValidatorPackagedTemplate.yaml
+    - ValidatorLambda.zip
+    - DataLoaderPackagedTemplate.yaml
+    - DataLoaderLambda.zip
+    - UniversitiesPackagedTemplate.yaml
+    - LoadUniversitiesLambda.zip
