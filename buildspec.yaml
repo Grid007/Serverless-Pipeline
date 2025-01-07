@@ -27,7 +27,7 @@ phases:
           --output-template-file DataLoaderPackagedTemplate.yaml
 
       # Package LoadUniversitiesLambda
-      - cd lambdas/Universities
+      - cd lambdas/LoadUniversitiesLambda
       - zip -r ../../LoadUniversitiesLambda.zip .
       - cd ../..  # Navigate back to the project root directory
       - |
