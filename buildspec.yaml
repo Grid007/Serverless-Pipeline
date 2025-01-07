@@ -9,8 +9,9 @@ phases:
       # Package ValidatorLambda
       - cd lambdas/ValidatorLambda
       - zip -r ../../ValidatorLambda.zip .
-      - cd ../..
-      - aws cloudformation package \
+      - cd ../..  # Navigate back to the project root directory
+      - |
+        aws cloudformation package \
           --template-file lambda_cf_template.yaml \
           --s3-bucket pipeline-cicd-serverless \
           --output-template-file ValidatorPackagedTemplate.yaml
@@ -18,8 +19,9 @@ phases:
       # Package DataLoaderLambda
       - cd lambdas/DataLoaderLambda
       - zip -r ../../DataLoaderLambda.zip .
-      - cd ../..
-      - aws cloudformation package \
+      - cd ../..  # Navigate back to the project root directory
+      - |
+        aws cloudformation package \
           --template-file lambda_cf_template.yaml \
           --s3-bucket pipeline-cicd-serverless \
           --output-template-file DataLoaderPackagedTemplate.yaml
@@ -27,8 +29,9 @@ phases:
       # Package LoadUniversitiesLambda
       - cd lambdas/Universities
       - zip -r ../../LoadUniversitiesLambda.zip .
-      - cd ../..
-      - aws cloudformation package \
+      - cd ../..  # Navigate back to the project root directory
+      - |
+        aws cloudformation package \
           --template-file lambda_cf_template.yaml \
           --s3-bucket pipeline-cicd-serverless \
           --output-template-file UniversitiesPackagedTemplate.yaml
