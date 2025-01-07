@@ -20,13 +20,12 @@ Resources:
   ValidatorLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: ValidatorLambda
-      Handler: app.lambda_handler
+      Handler: lambda_function.lambda_handler
       Runtime: python3.13
-      Role: arn:aws:iam::123456789012:role/service-role/ValidatorLambda-role
+      Role: arn:aws:iam::592789829210:role/service-role/ValidatorLambda-role-vecq9y9u
       Code:
-        S3Bucket: !Ref CodeBucket
-        S3Key: !Ref ValidatorCodeKey
+        S3Bucket: !Sub "${CodeBucket}"
+        S3Key: !Sub "${ValidatorCodeKey}"
       Timeout: 30
       MemorySize: 128
       Description: "Validator Lambda function deployed via CodePipeline"
@@ -35,41 +34,39 @@ Resources:
   DataLoaderLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: DataLoaderLambda
       Handler: lambda_function.lambda_handler
       Runtime: python3.13
-      Role: arn:aws:iam::123456789012:role/service-role/DataLoaderLambda-role
+      Role: arn:aws:iam::592789829210:role/service-role/ValidatorLambda-role-vecq9y9u
       Code:
-        S3Bucket: !Ref CodeBucket
-        S3Key: !Ref DataLoaderCodeKey
+        S3Bucket: !Sub "${CodeBucket}"
+        S3Key: !Sub "${DataLoaderCodeKey}"
       Timeout: 30
       MemorySize: 128
       Description: "DataLoader Lambda function deployed via CodePipeline"
 
-  # LoadUniversities Lambda Function
+  # Load Universities Lambda Function
   LoadUniversitiesLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: LoadUniversitiesLambda
       Handler: lambda_function.lambda_handler
       Runtime: python3.13
-      Role: arn:aws:iam::123456789012:role/service-role/LoadUniversitiesLambda-role
+      Role: arn:aws:iam::592789829210:role/service-role/ValidatorLambda-role-vecq9y9u
       Code:
-        S3Bucket: !Ref CodeBucket
-        S3Key: !Ref UniversitiesCodeKey
+        S3Bucket: !Sub "${CodeBucket}"
+        S3Key: !Sub "${UniversitiesCodeKey}"
       Timeout: 30
       MemorySize: 128
       Description: "Load Universities Lambda function deployed via CodePipeline"
 
 Outputs:
-  ValidatorLambdaFunctionName:
-    Description: "Name of the Validator Lambda Function"
-    Value: !GetAtt ValidatorLambdaFunction.FunctionName
+  ValidatorLambdaFunctionArn:
+    Description: "ARN of the Validator Lambda Function"
+    Value: !GetAtt ValidatorLambdaFunction.Arn
 
-  DataLoaderLambdaFunctionName:
-    Description: "Name of the DataLoader Lambda Function"
-    Value: !GetAtt DataLoaderLambdaFunction.FunctionName
+  DataLoaderLambdaFunctionArn:
+    Description: "ARN of the DataLoader Lambda Function"
+    Value: !GetAtt DataLoaderLambdaFunction.Arn
 
-  LoadUniversitiesLambdaFunctionName:
-    Description: "Name of the Load Universities Lambda Function"
-    Value: !GetAtt LoadUniversitiesLambdaFunction.FunctionName
+  LoadUniversitiesLambdaFunctionArn:
+    Description: "ARN of the Load Universities Lambda Function"
+    Value: !GetAtt LoadUniversitiesLambdaFunction.Arn
