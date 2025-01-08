@@ -1,10 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CloudFormation template for deploying multiple Lambda functions and a Step Function via CodePipeline.
+Description: CloudFormation template for deploying Lambda functions, ECS Fargate, and a Step Function via CodePipeline.
 
 Parameters:
   CodeBucket:
     Type: String
-    Description: "The S3 bucket containing the Lambda deployment packages"
+    Description: "The S3 bucket containing the deployment packages"
   ValidatorCodeKey:
     Type: String
     Description: "The S3 key for the ValidatorLambda deployment package"
@@ -18,6 +18,18 @@ Parameters:
     Type: String
     Default: "step-function/flow.json"
     Description: "The S3 key for the Step Function definition file"
+  ContainerImageURI:
+    Type: String
+    Description: "URI of the Docker image to use for the ECS Fargate task"
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: "Subnet IDs for ECS tasks"
+  SecurityGroupId:
+    Type: String
+    Description: "Security Group ID for ECS tasks"
+  TaskExecutionRoleArn:
+    Type: String
+    Description: "IAM Role ARN for ECS Task execution"
 
 Resources:
   # Validator Lambda Function
@@ -62,6 +74,29 @@ Resources:
       MemorySize: 128
       Description: "Load Universities Lambda function deployed via CodePipeline"
 
+  # ECS Fargate Task Definition
+  FargateTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: "aggregate-computation-task"
+      Cpu: "256"
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !Ref TaskExecutionRoleArn
+      TaskRoleArn: !Ref TaskExecutionRoleArn
+      ContainerDefinitions:
+        - Name: "aggregate-computation-container"
+          Image: !Ref ContainerImageURI
+          Cpu: 256
+          Memory: 512
+          Essential: true
+          Command:
+            - "python"
+            - "aggregate_task.py"
+            - "$.country"
+
   # Step Function
   StateMachine:
     Type: AWS::StepFunctions::StateMachine
@@ -84,6 +119,10 @@ Outputs:
   LoadUniversitiesLambdaFunctionArn:
     Description: "ARN of the Load Universities Lambda Function"
     Value: !GetAtt LoadUniversitiesLambdaFunction.Arn
+
+  FargateTaskDefinitionArn:
+    Description: "ARN of the ECS Task Definition"
+    Value: !Ref FargateTaskDefinition
 
   StateMachineArn:
     Description: "ARN of the Step Function"

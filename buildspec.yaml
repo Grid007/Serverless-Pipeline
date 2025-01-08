@@ -35,7 +35,19 @@ phases:
           --template-file lambda_cf_template.yaml \
           --s3-bucket pipeline-cicd-serverless \
           --output-template-file UniversitiesPackagedTemplate.yaml
-          
+      
+       # Build Docker image for Fargate
+      - echo "Building Docker image for Fargate..."
+      - cd fargate
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Building the Docker image...
+      - docker build -t $ECR_REPOSITORY_NAME:latest .
+      - docker tag $ECR_REPOSITORY_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:latest
+      - echo Pushing the Docker image to ECR...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:latest
+      - cd ..
+      
       # Upload Step Function flow.json
       - aws s3 cp step-function/flow.json s3://pipeline-cicd-serverless/step-function/flow.json
 
