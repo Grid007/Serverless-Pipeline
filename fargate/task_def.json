@@ -1,0 +1,50 @@
+{
+  "family": "aggregate-computation-task",
+  "containerDefinitions": [
+    {
+      "name": "aggregate-computation-container",
+      "image": "592789829210.dkr.ecr.ap-south-1.amazonaws.com/aggregate-computation:latest",
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [],
+      "essential": true,
+      "command": [
+        "python",
+        "aggregate_task.py",
+        "$.country"
+      ],
+      "environment": [
+        {
+          "name": "DB_NAME",
+          "value": "neondb"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "ep-dawn-glitter-a1ozc4ft.ap-southeast-1.aws.neon.tech"
+        },
+        {
+          "name": "DB_PASS",
+          "value": "Tb1txHzZnXe7"
+        },
+        {
+          "name": "DB_USER",
+          "value": "neondb_owner"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "systemControls": []
+    }
+  ],
+  "taskRoleArn": "arn:aws:iam::592789829210:role/ecsTaskRole",
+  "executionRoleArn": "arn:aws:iam::592789829210:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "enableFaultInjection": false
+}
