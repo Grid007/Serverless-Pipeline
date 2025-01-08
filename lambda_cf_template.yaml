@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CloudFormation template for deploying multiple Lambda functions via CodePipeline.
+Description: CloudFormation template for deploying multiple Lambda functions and a Step Function via CodePipeline.
 
 Parameters:
   CodeBucket:
@@ -14,6 +14,10 @@ Parameters:
   UniversitiesCodeKey:
     Type: String
     Description: "The S3 key for the LoadUniversitiesLambda deployment package"
+  StepFunctionDefinitionKey:
+    Type: String
+    Default: "step-function/flow.json"
+    Description: "The S3 key for the Step Function definition file"
 
 Resources:
   # Validator Lambda Function
@@ -58,6 +62,16 @@ Resources:
       MemorySize: 128
       Description: "Load Universities Lambda function deployed via CodePipeline"
 
+  # Step Function
+  StateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: MyStepFunction
+      DefinitionS3Location:
+        Bucket: !Ref CodeBucket
+        Key: !Ref StepFunctionDefinitionKey
+      RoleArn: arn:aws:iam::592789829210:role/service-role/StepFunctions-MyStateMachine-wtou1f1my-role-47j7sgj16
+
 Outputs:
   ValidatorLambdaFunctionArn:
     Description: "ARN of the Validator Lambda Function"
@@ -70,3 +84,7 @@ Outputs:
   LoadUniversitiesLambdaFunctionArn:
     Description: "ARN of the Load Universities Lambda Function"
     Value: !GetAtt LoadUniversitiesLambdaFunction.Arn
+
+  StateMachineArn:
+    Description: "ARN of the Step Function"
+    Value: !GetAtt StateMachine.Arn

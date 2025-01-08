@@ -1,0 +1,91 @@
+{
+  "StartAt": "ValidatorLambda",
+  "States": {
+    "ValidatorLambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:ap-south-1:592789829210:function:ValidatorLambda",
+      "Next": "DataLoaderLambda",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "FailureState"
+        }
+      ]
+    },
+    "DataLoaderLambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:ap-south-1:592789829210:function:DataLoaderLambda",
+      "Next": "CheckUniversitiesData",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "FailureState"
+        }
+      ]
+    },
+    "CheckUniversitiesData": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.action",
+          "StringEquals": "load_universities",
+          "Next": "LoadUniversitiesLambda"
+        },
+        {
+          "Variable": "$.action",
+          "StringEquals": "trigger_fargate",
+          "Next": "TriggerFargateTask"
+        }
+      ],
+      "Default": "FailureState"
+    },
+    "LoadUniversitiesLambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:ap-south-1:592789829210:function:LoadUniversitiesLambda",
+      "Next": "TriggerFargateTask",
+      "ResultPath": "$.lambdaOutput"
+    },
+    "TriggerFargateTask": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.sync",
+      "Parameters": {
+        "Cluster": "aggregate-computation-cluster",
+        "TaskDefinition": "aggregate-computation-task",
+        "Overrides": {
+          "ContainerOverrides": [
+            {
+              "Name": "aggregate-computation-container",
+              "Command.$": "States.Array('python', 'aggregate_task.py', $.country)"
+            }
+          ]
+        },
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "Subnets": [
+              "subnet-03bcbc5125b57a9f4",
+              "subnet-021a24b3a3eacc446"
+            ],
+            "SecurityGroups": [
+              "sg-0a086265e42e22182"
+            ],
+            "AssignPublicIp": "ENABLED"
+          }
+        }
+      },
+      "Next": "SuccessState"
+    },
+    "FailureState": {
+      "Type": "Fail",
+      "Error": "PipelineFailure",
+      "Cause": "One of the tasks failed."
+    },
+    "SuccessState": {
+      "Type": "Succeed"
+    }
+  }
+}

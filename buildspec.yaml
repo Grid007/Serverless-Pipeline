@@ -35,6 +35,10 @@ phases:
           --template-file lambda_cf_template.yaml \
           --s3-bucket pipeline-cicd-serverless \
           --output-template-file UniversitiesPackagedTemplate.yaml
+          
+      # Upload Step Function flow.json
+      - aws s3 cp step-function/flow.json s3://pipeline-cicd-serverless/step-function/flow.json
+
 
 artifacts:
   files:
